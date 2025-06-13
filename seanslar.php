@@ -9,11 +9,10 @@ if ($conn->connect_error) {
     die("Bağlantı hatası: " . $conn->connect_error);
 }
 
-// Filmler ve Salonlar'ı çekiyoruz (dropdownlar için)
 $filmler = $conn->query("SELECT * FROM Filmler ORDER BY FilmAdi");
 $salonlar = $conn->query("SELECT * FROM Salonlar ORDER BY SalonAdi");
 
-// Seans ekleme
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['seans_ekle'])) {
         $filmID = (int)$_POST['FilmID'];
@@ -21,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $seansTarihi = $_POST['SeansTarihi'];
         $seansSaati = $_POST['SeansSaati'];
 
-        // Basit validation
+
         if (!$filmID || !$salonID || !$seansTarihi || !$seansSaati) {
             $mesaj = "Lütfen tüm alanları doldurunuz.";
         } else {
@@ -34,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Seans güncelleme
+
     if (isset($_POST['seans_guncelle'])) {
         $seansID = (int)$_POST['SeansID'];
         $filmID = (int)$_POST['FilmID'];
@@ -55,14 +54,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Seans silme
+
 if (isset($_GET['islem']) && $_GET['islem'] === 'sil' && isset($_GET['SeansID'])) {
     $seansID = (int)$_GET['SeansID'];
     $conn->query("DELETE FROM Seanslar WHERE SeansID=$seansID");
     $mesaj = "Seans silindi.";
 }
 
-// Güncelleme için seans bilgisi çekme
+
 $guncellenecekSeans = null;
 if (isset($_GET['islem']) && $_GET['islem'] === 'guncelle' && isset($_GET['SeansID'])) {
     $seansID = (int)$_GET['SeansID'];
@@ -72,7 +71,7 @@ if (isset($_GET['islem']) && $_GET['islem'] === 'guncelle' && isset($_GET['Seans
     }
 }
 
-// Tüm seansları listeleme (join ile film ve salon isimleri)
+
 $seanslar = $conn->query("
     SELECT s.SeansID, f.FilmAdi, sa.SalonAdi, s.SeansTarihi, s.SeansSaati
     FROM Seanslar s

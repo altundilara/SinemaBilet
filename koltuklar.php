@@ -9,19 +9,19 @@ if ($conn->connect_error) {
     die("Bağlantı hatası: " . $conn->connect_error);
 }
 
-// Öncelikle tüm salonları çekiyoruz (seçim için)
+
 $salonlarResult = $conn->query("SELECT * FROM Salonlar ORDER BY SalonAdi");
 
-// Salon seçimi için
+
 $seciliSalonID = isset($_GET['SalonID']) ? (int)$_GET['SalonID'] : 0;
 
-// Koltuk ekleme
+
 if (isset($_POST['koltuk_ekle'])) {
     $salonID = (int)$_POST['SalonID'];
     $koltukNumarasi = $_POST['KoltukNumarasi'];
-    $koltukNumarasiInt = (int)$koltukNumarasi; // string'i int'e çevir
+    $koltukNumarasiInt = (int)$koltukNumarasi; 
 
-    // Önce salonun kapasitesini alalım
+   
     $kapasiteSorgu = $conn->query("SELECT Kapasite FROM Salonlar WHERE SalonID = $salonID");
     if ($kapasiteSorgu && $kapasiteSorgu->num_rows > 0) {
         $kapasite = (int)$kapasiteSorgu->fetch_assoc()['Kapasite'];
@@ -30,17 +30,17 @@ if (isset($_POST['koltuk_ekle'])) {
         $kapasite = 0;
     }
 
-    // Toplam mevcut koltuk sayısını alalım
+ 
     $mevcutKoltukSayisi = 0;
     $sayimSorgu = $conn->query("SELECT COUNT(*) as sayi FROM Koltuklar WHERE SalonID = $salonID");
     if ($sayimSorgu && $sayimSorgu->num_rows > 0) {
         $mevcutKoltukSayisi = (int)$sayimSorgu->fetch_assoc()['sayi'];
     }
 
-    // Kontroller
+   
 
     if ($kapasite == 0) {
-        // Salon bulunamadıysa ekleme yapma zaten mesaj verildi
+
     }
     else if ($koltukNumarasiInt > $kapasite) {
         $mesaj = "Koltuk numarası salon kapasitesinden yüksek olamaz (Maksimum koltuk numarası: $kapasite).";
@@ -49,7 +49,7 @@ if (isset($_POST['koltuk_ekle'])) {
         $mesaj = "Salon kapasitesi doldu, daha fazla koltuk eklenemez.";
     }
     else {
-        // Aynı koltuk numarası salon içinde tekrar etmemeli
+       
         $kontrol = $conn->query("SELECT * FROM Koltuklar WHERE SalonID=$salonID AND KoltukNumarasi='$koltukNumarasi'");
         if ($kontrol && $kontrol->num_rows > 0) {
             $mesaj = "Bu koltuk numarası zaten seçili salonda mevcut!";
@@ -63,18 +63,18 @@ if (isset($_POST['koltuk_ekle'])) {
         }
     }
 
-    $seciliSalonID = $salonID; // seçili salonu koru
+    $seciliSalonID = $salonID; 
 
     
-    // ... diğer kodlar değişmeden kalır ...
+
 }
 
 
-// Koltuk silme
+
 if (isset($_GET['islem']) && $_GET['islem'] === 'sil' && isset($_GET['KoltukID'])) {
     $koltukID = (int)$_GET['KoltukID'];
 
-    // Silmeden önce salon ID'yi alalım ki sonrasında aynı sayfaya dönelim
+    
     $salonSorgu = $conn->query("SELECT SalonID FROM Koltuklar WHERE KoltukID=$koltukID");
     if ($salonSorgu && $salonSorgu->num_rows > 0) {
         $row = $salonSorgu->fetch_assoc();
@@ -85,7 +85,7 @@ if (isset($_GET['islem']) && $_GET['islem'] === 'sil' && isset($_GET['KoltukID']
     $mesaj = "Koltuk silindi.";
 }
 
-// Güncelleme için koltuk seçme
+
 $guncellenecekKoltuk = null;
 if (isset($_GET['islem']) && $_GET['islem'] === 'guncelle' && isset($_GET['KoltukID'])) {
     $koltukID = (int)$_GET['KoltukID'];
@@ -96,7 +96,7 @@ if (isset($_GET['islem']) && $_GET['islem'] === 'guncelle' && isset($_GET['Koltu
     }
 }
 
-// Seçili salonun koltuklarını listeleme
+
 $koltuklarResult = null;
 if ($seciliSalonID > 0) {
     $koltuklarResult = $conn->query("SELECT * FROM Koltuklar WHERE SalonID=$seciliSalonID ORDER BY KoltukNumarasi");
